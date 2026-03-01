@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notebook - 集运履约申报 SOP</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1 class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          Notebook
+        </h1>
+        <button class="btn-icon theme-toggle" id="themeToggle" title="切换主题">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="搜索笔记..." autocomplete="off">
+      </div>
+
+      <div class="category-tabs">
+        <button class="category-tab active" data-category="all">全部</button>
+        <button class="category-tab" data-category="sop">SOP</button>
+        <button class="category-tab" data-category="note">笔记</button>
+        <button class="category-tab" data-category="todo">待办</button>
+      </div>
+
+      <div class="note-list" id="noteList"></div>
+
+      <button class="btn-new-note" id="newNoteBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        新建笔记
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.3">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <h2>选择一个笔记或创建新笔记</h2>
+        <p>点击左侧笔记列表，或点击下方按钮开始</p>
+        <button class="btn-primary" id="emptyNewBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          新建笔记
+        </button>
+      </div>
+
+      <!-- Editor -->
+      <div class="editor-container" id="editorContainer" style="display:none;">
+        <div class="editor-header">
+          <div class="editor-meta">
+            <select class="category-select" id="categorySelect">
+              <option value="note">笔记</option>
+              <option value="sop">SOP</option>
+              <option value="todo">待办</option>
+            </select>
+            <span class="save-status" id="saveStatus">已保存</span>
+          </div>
+          <div class="editor-actions">
+            <button class="btn-icon" id="exportBtn" title="导出为 Markdown">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            <button class="btn-icon btn-danger" id="deleteBtn" title="删除笔记">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <input type="text" class="editor-title" id="editorTitle" placeholder="笔记标题...">
+        <div class="editor-toolbar" id="editorToolbar">
+          <button class="toolbar-btn" data-action="bold" title="粗体 (Ctrl+B)"><b>B</b></button>
+          <button class="toolbar-btn" data-action="italic" title="斜体 (Ctrl+I)"><i>I</i></button>
+          <button class="toolbar-btn" data-action="underline" title="下划线 (Ctrl+U)"><u>U</u></button>
+          <span class="toolbar-divider"></span>
+          <button class="toolbar-btn" data-action="heading" title="标题">H</button>
+          <button class="toolbar-btn" data-action="insertUnorderedList" title="无序列表">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+          <button class="toolbar-btn" data-action="insertOrderedList" title="有序列表">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+          </button>
+          <span class="toolbar-divider"></span>
+          <button class="toolbar-btn" data-action="insertCheckbox" title="复选框">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>
+          </button>
+          <button class="toolbar-btn" data-action="code" title="代码块">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </button>
+          <button class="toolbar-btn" data-action="quote" title="引用">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 17h3l2-4V7H5v6h3"/><path d="M15 17h3l2-4V7h-6v6h3"/></svg>
+          </button>
+          <span class="toolbar-divider"></span>
+          <button class="toolbar-btn" data-action="insertHR" title="分割线">—</button>
+        </div>
+        <div class="editor-body" id="editorBody" contenteditable="true" data-placeholder="开始写作..."></div>
+        <div class="editor-footer">
+          <span class="word-count" id="wordCount">0 字</span>
+          <span class="updated-time" id="updatedTime"></span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="deleteModal" style="display:none;">
+    <div class="modal">
+      <h3>确认删除</h3>
+      <p>删除后无法恢复，确定要删除这个笔记吗？</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelDelete">取消</button>
+        <button class="btn-danger-solid" id="confirmDelete">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile toggle -->
+  <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>
